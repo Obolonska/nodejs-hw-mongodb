@@ -6,10 +6,11 @@ export const getAllContacts = async ({
   sortBy = '_id',
   sortOrder = 'asc',
   filter = {},
+  userId,
 }) => {
   const skip = page > 0 ? (page - 1) * perPage : 0;
 
-  const contactQuery = Contact.find();
+  const contactQuery = Contact.find({ userId });
 
   if (filter.isFavourite !== undefined) {
     contactQuery.where('isFavourite').equals(filter.isFavourite);
@@ -48,12 +49,13 @@ export const createContact = async (payload) => {
   return Contact.create(payload);
 };
 
-export const deleteContact = async (Id) => {
-  return Contact.findByIdAndDelete(Id);
+export const deleteContact = async (contactId, { userId }) => {
+  return Contact.findOneAndDelete({ _id: contactId, userId });
 };
-
-export async function updateContact(studentId, payload) {
-  return Contact.findByIdAndUpdate(studentId, payload, {
-    new: true,
-  });
+export async function updateContact(contactId, payload) {
+  return Contact.findOneAndUpdate(
+    { _id: contactId, userId: payload.userId },
+    payload,
+    { new: true },
+  );
 }

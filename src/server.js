@@ -4,9 +4,10 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { initMongoDB } from './db/initMongoConnection.js';
 import { getEnvVar } from './utils/getEnvVar.js';
-import contactsRouter from './routers/contacts.js';
+import router from './routers/index.js';
 import errorHandler from './middlewares/errorHandler.js';
 import notFoundHandler from './middlewares/notFoundHandler.js';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 const app = express();
@@ -28,7 +29,8 @@ export default async function setupServer() {
       }),
     );
     app.use(express.json());
-    app.use('/contacts', contactsRouter);
+    app.use(cookieParser());
+    app.use(router);
 
     app.use((req, res, next) => {
       console.log(`Time: ${new Date().toLocaleString()}`);
