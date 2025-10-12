@@ -1,3 +1,4 @@
+import createHttpError from 'http-errors';
 import { logoutUser, refreshSession, registerUser } from '../services/auth.js';
 import { loginUser } from '../services/auth.js';
 
@@ -33,9 +34,10 @@ export const loginUserController = async (req, res) => {
 };
 export const logoutUserController = async (req, res) => {
   const sessionId = req.cookies.sessionId;
-  if (sessionId) {
-    await logoutUser(sessionId);
+  if (!sessionId) {
+    throw new createHttpError.Unauthorized('Session not found');
   }
+  await logoutUser(sessionId);
   res.clearCookie('sessionId');
   res.clearCookie('refreshToken');
 
