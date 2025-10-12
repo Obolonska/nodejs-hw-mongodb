@@ -17,7 +17,7 @@ async function createNewSession(userId) {
 export const registerUser = async (payload) => {
   const user = await UsersCollection.findOne({ email: payload.email });
   if (user) {
-    throw new createHttpError.Conflict(409, 'Email in use');
+    throw new createHttpError.Conflict('Email in use');
   }
   payload.password = await bcrypt.hash(payload.password, 10);
   return await UsersCollection.create(payload);
@@ -39,6 +39,10 @@ export const loginUser = async (payload) => {
 };
 
 export const logoutUser = async (sessionId) => {
+  const session = await Session.findById(sessionId);
+  if (!session) {
+    throw new createHttpError.Unauthorized('Session not found');
+  }
   await Session.deleteOne({ _id: sessionId });
 };
 

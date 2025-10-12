@@ -33,7 +33,7 @@ export const loginUserController = async (req, res) => {
 };
 export const logoutUserController = async (req, res) => {
   const sessionId = req.cookies.sessionId;
-  if (typeof sessionId === 'string') {
+  if (sessionId) {
     await logoutUser(sessionId);
   }
   res.clearCookie('sessionId');
