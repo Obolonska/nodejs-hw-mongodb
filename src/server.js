@@ -30,6 +30,7 @@ export default async function setupServer() {
     );
     app.use(express.json());
     app.use(cookieParser());
+
     app.use(router);
 
     app.use((req, res, next) => {

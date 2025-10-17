@@ -1,15 +1,26 @@
+import * as fs from 'node:fs';
+import path from 'node:path';
 import createHttpError from 'http-errors';
 import { UsersCollection } from '../db/models/user.js';
 import bcrypt from 'bcryptjs';
 import { Session } from '../db/models/session.js';
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
+import { getEnvVar } from '../utils/getEnvVar.js';
+import Handlebars from 'handlebars';
+import { sendEmail } from '../utils/sendMail.js';
+
+const REQUEST_PASSWORD_RESET_TEMPLATE = fs.readFileSync(
+  path.resolve('src/templates/request-password-reset.html'),
+  'utf-8',
+);
 
 async function createNewSession(userId) {
   return Session.create({
     userId,
     accessToken: crypto.randomBytes(30).toString('base64'),
     refreshToken: crypto.randomBytes(30).toString('base64'),
-    accessTokenValidUntil: new Date(Date.now() + 15 * 60 * 1000), // 15 хвилин
+    accessTokenValidUntil: new Date(Date.now() + 100 * 60 * 1000), // 15 хвилин
     refreshTokenValidUntil: new Date(Date.now() + 24 * 30 * 60 * 60 * 1000), // 30 днів
   });
 }
@@ -62,4 +73,51 @@ export const refreshSession = async (sessionId, refreshToken) => {
 
   await Session.deleteOne({ _id: session._id });
   return createNewSession(session.userId);
+};
+
+export const requestResetToken = async (email) => {
+  const user = await UsersCollection.findOne({ email });
+  if (!user) {
+    throw new createHttpError.NotFound('User not found!');
+  }
+  const token = jwt.sign({ sub: user._id }, getEnvVar('JWT_SECRET'), {
+    expiresIn: '5m',
+  });
+  const template = Handlebars.compile(REQUEST_PASSWORD_RESET_TEMPLATE);
+
+  try {
+    await sendEmail({
+      to: email,
+      subject: 'Reset your password',
+      html: template({
+        user: { email: user.email, name: user.name },
+        resetLink: `https://${getEnvVar(
+          'APP_DOMAIN',
+        )}/reset-password?token=${token}`,
+      }),
+    });
+  } catch (error) {
+    console.error('Email sending failed:', error);
+    throw new createHttpError.InternalServerError(
+      'Failed to send the email, please try again later.',
+    );
+  }
+};
+
+export const resetPassword = async (token, password) => {
+  try {
+    const decoded = jwt.verify(token, getEnvVar('JWT_SECRET'));
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await UsersCollection.findByIdAndUpdate(decoded.sub, {
+      password: hashedPassword,
+    });
+  } catch (err) {
+    if (err.name === 'TokenExpiredError') {
+      throw new createHttpError.Unauthorized('Token expired');
+    }
+    if (err.name === 'JsonWebTokenError') {
+      throw new createHttpError.Unauthorized('Invalid token');
+    }
+    throw err;
+  }
 };
