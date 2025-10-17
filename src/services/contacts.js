@@ -40,8 +40,8 @@ export const getAllContacts = async ({
   };
 };
 
-export const getContactById = async (Id) => {
-  const contact = await Contact.findById(Id);
+export const getContactById = async (contactId, { userId }) => {
+  const contact = await Contact.findOne({ _id: contactId, userId });
   return contact;
 };
 

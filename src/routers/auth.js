@@ -8,7 +8,6 @@ import {
   refreshSessionController,
 } from '../controllers/auth.js';
 import { validateBody } from '../middlewares/validateBody.js';
-import { authenticate } from '../middlewares/auth.js';
 
 const router = Router();
 
@@ -25,7 +24,7 @@ router.post(
   ctrlWrapper(loginUserController),
 );
 
-router.post('/logout', authenticate, logoutUserController);
+router.post('/logout', logoutUserController);
 
 router.post('/refresh', refreshSessionController);
 
