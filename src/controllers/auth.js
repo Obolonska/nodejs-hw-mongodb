@@ -1,5 +1,6 @@
 import createHttpError from 'http-errors';
 import {
+  loginOrRegister,
   logoutUser,
   refreshSession,
   registerUser,
@@ -7,6 +8,7 @@ import {
 } from '../services/auth.js';
 import { loginUser } from '../services/auth.js';
 import { resetPassword } from '../services/auth.js';
+import { getGoogleOAuthUrl, validateCode } from '../utils/googleOauth.js';
 
 export const registerUserController = async (req, res) => {
   const user = await registerUser(req.body);
@@ -86,5 +88,41 @@ export const resetPasswordController = async (req, res) => {
     status: 200,
     message: 'Password has been successfully reset.',
     data: {},
+  });
+};
+
+export const getOAuthUrlController = (req, res) => {
+  const oauthUrl = getGoogleOAuthUrl();
+  res.status(200).json({
+    status: 200,
+    message: 'Successfully get OAuth URL!',
+    data: {
+      oauth_url: oauthUrl,
+    },
+  });
+};
+
+export const confirmOAuthController = async (req, res) => {
+  const ticket = await validateCode(req.body.code);
+  const session = await loginOrRegister(
+    ticket.payload.email,
+    ticket.payload.name,
+  );
+
+  res.cookie('sessionId', session._id, {
+    httpOnly: true,
+    expire: session.refreshTokenValidUntil,
+  });
+
+  res.cookie('refreshToken', session.refreshToken, {
+    httpOnly: true,
+    expire: session.refreshTokenValidUntil,
+  });
+  res.status(200).json({
+    status: 200,
+    message: 'Successfully confirmed OAuth!',
+    data: {
+      accessToken: session.accessToken,
+    },
   });
 };
