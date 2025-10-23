@@ -53,5 +53,3 @@ properties:
     type: string
     format: date-time
     example: 2025-10-17T16:52:36.305+00:00
----
-

@@ -37,7 +37,7 @@ export const registerUser = async (payload) => {
 export const loginUser = async (payload) => {
   const user = await UsersCollection.findOne({ email: payload.email });
   if (!user) {
-    throw new createHttpError.Unauthorized('Email or password is wrong 1');
+    throw new createHttpError.Unauthorized('Email or password is wrong');
   }
 
   const isEqual = await bcrypt.compare(payload.password, user.password);
