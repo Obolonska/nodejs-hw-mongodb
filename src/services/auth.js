@@ -20,7 +20,7 @@ async function createNewSession(userId) {
     userId,
     accessToken: crypto.randomBytes(30).toString('base64'),
     refreshToken: crypto.randomBytes(30).toString('base64'),
-    accessTokenValidUntil: new Date(Date.now() + 100 * 60 * 1000), // 15 хвилин
+    accessTokenValidUntil: new Date(Date.now() + 15 * 60 * 1000), // 15 хвилин
     refreshTokenValidUntil: new Date(Date.now() + 24 * 30 * 60 * 60 * 1000), // 30 днів
   });
 }
@@ -120,4 +120,21 @@ export const resetPassword = async (token, password) => {
     }
     throw err;
   }
+};
+
+export const loginOrRegister = async (email, name) => {
+  let user = await UsersCollection.findOne({ email });
+  if (!user) {
+    const randomPassword = await bcrypt.hash(
+      crypto.randomBytes(10).toString('base64'),
+      10,
+    );
+    user = await UsersCollection.create({
+      email,
+      name,
+      password: randomPassword,
+    });
+  }
+  await Session.deleteOne({ userId: user._id });
+  return createNewSession(user._id);
 };
