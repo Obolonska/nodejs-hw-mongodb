@@ -1,3 +1,4 @@
+import * as fs from 'node:fs';
 import express from 'express';
 import pino from 'pino-http';
 import cors from 'cors';
@@ -8,10 +9,16 @@ import router from './routers/index.js';
 import errorHandler from './middlewares/errorHandler.js';
 import notFoundHandler from './middlewares/notFoundHandler.js';
 import cookieParser from 'cookie-parser';
+import swaggerUi from 'swagger-ui-express';
+import path from 'node:path';
+
+const SWAGGER_DOCUMENT = JSON.parse(
+  fs.readFileSync(path.join('docs', 'swagger.json'), 'utf-8'),
+);
 
 dotenv.config();
 const app = express();
-
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(SWAGGER_DOCUMENT));
 const PORT = Number(getEnvVar('PORT', '3000'));
 
 export default async function setupServer() {
