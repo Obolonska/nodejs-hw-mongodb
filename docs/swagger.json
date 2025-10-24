@@ -11,7 +11,10 @@
   },
   "servers": [
     {
-      "url": "http://l93.170.44.71"
+      "url": "http://localhost:9090"
+    },
+    {
+      "url": "https://example.com/api/v1"
     }
   ],
   "tags": [
