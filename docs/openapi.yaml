@@ -12,7 +12,8 @@ tags:
   - name: Auth
     description: Auth operations.
 servers:
-  - url: http://l93.170.44.71
+  - url: http://localhost:9090
+  - url: https://nodejs-hw-mongodb-k3jw.onrender.com
 
 paths:
   /contacts/{id}:
