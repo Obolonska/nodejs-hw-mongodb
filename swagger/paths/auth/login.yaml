@@ -5,7 +5,6 @@ operationId: loginUser
 description: Login an existing user
 security:
   - bearerAuth: []
-
 requestBody:
   required: true
   content:
@@ -52,7 +51,6 @@ responses:
                 email:
                   type: string
                   example: john.doe@example.com
-
   '401':
     $ref: ../../components/responses/401.yaml
   '500':

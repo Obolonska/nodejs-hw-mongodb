@@ -5,7 +5,6 @@ operationId: getContact
 description: Get contact by ID
 security:
   - bearerAuth: []
-
 parameters:
   - in: path
     name: id
@@ -33,7 +32,6 @@ responses:
               example: Contact found successfully
             data:
               $ref: ../../../components/schemas/contact.yaml
-
   '401':
     $ref: ../../../components/responses/401.yaml
   '404':

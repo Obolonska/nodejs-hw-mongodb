@@ -14,7 +14,7 @@
       "url": "http://localhost:9090"
     },
     {
-      "url": "https://example.com/api/v1"
+      "url": "https://nodejs-hw-mongodb-k3jw.onrender.com"
     }
   ],
   "tags": [
@@ -464,24 +464,6 @@
               ],
               "example": "asc"
             }
-          },
-          {
-            "in": "query",
-            "name": "filter",
-            "schema": {
-              "type": "string"
-            },
-            "example": "work",
-            "description": "Filter contacts by contactType and isFavourite"
-          },
-          {
-            "in": "query",
-            "name": "userId",
-            "schema": {
-              "type": "string"
-            },
-            "example": "68e40dc8103fefd980c3bdd4",
-            "description": "Filter contacts by userId"
           }
         ],
         "responses": {
