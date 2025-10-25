@@ -4,7 +4,6 @@ summary: Register a new user
 operationId: registerUser
 description: Register a new user
 security: []
-
 requestBody:
   required: true
   content:
@@ -29,7 +28,6 @@ requestBody:
             type: string
             description: Password for the new user
             example: password123
-
 responses:
   '201':
     description: User registered successfully

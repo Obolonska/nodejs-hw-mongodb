@@ -64,7 +64,6 @@ responses:
               example: Contact updated successfully
             data:
               $ref: ../../../components/schemas/contact.yaml
-
   '400':
     $ref: ../../../components/responses/400.yaml
   '401':

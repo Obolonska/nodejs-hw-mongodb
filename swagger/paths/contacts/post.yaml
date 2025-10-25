@@ -5,7 +5,6 @@ operationId: createContact
 description: Create a new contact
 security:
   - bearerAuth: []
-
 requestBody:
   required: true
   content:
